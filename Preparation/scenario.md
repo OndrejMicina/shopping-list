@@ -1,6 +1,10 @@
 ### Scenario
 
+* Prepare coding environment
+* Setup required packages
+* 
 * Build initial flutter app
+*   
 * Create simple list of goods in flutter CRUD
 * Create local databse
 * Create simple local API and connect to database 
