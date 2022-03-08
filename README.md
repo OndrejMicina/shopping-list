@@ -12,7 +12,8 @@ Used technologies
 ## SCENARIO
 
 The main idea of this project is to manage one shopping list within a group of users. 
-Users well be able to use application without registering. ~~Shopping list should be awailable in local memory for offline use ~~
+Users well be able to use application without registering. 
+~~Shopping list should be awailable in local memory for offline use ~~
 First of all, user will create shopping list, after this, he will be able to edit list such as adding / delleting /or marking as bought. 
 If he want to share, he will send the link or code to join the list. 
 
