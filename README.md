@@ -32,7 +32,21 @@ As a user i will be able to:
 * Use easy to interact interface 
 * Share my shopping list using link or code
 
+### PLAN
 
+* Prepare coding environment
+* Setup required packages
+* 
+* Build initial flutter app
+*   
+* Create simple list of goods in flutter CRUD
+* Create local databse
+* Create simple local API and connect to database 
+* Try simple requests from database to obtain goods in list
+* Edit app to fetch data from API
+* Create flutter menu for conecting to group
+* Implement groups 
+* Test creating list in groups
 
 
 
