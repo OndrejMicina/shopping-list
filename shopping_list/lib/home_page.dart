@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:shopping_list/grocery_list_tile_view.dart';
 import 'package:shopping_list/models/grocery_model.dart';
 import 'dialogs/create_new_list_dialog.dart';
 import 'models/grocery_list_model.dart';
+import 'package:nanoid/nanoid.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -23,13 +25,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<GroceryList> userGroceryLists = [];
+  List<GroceryList> userGroceryLists =
+      Hive.box('userLists').values.toList().cast<GroceryList>();
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    void _appendToList(groceryList) {
+    userGroceryLists =
+        Hive.box('userLists').values.toList().cast<GroceryList>();
+
+    void _appendToList(GroceryList groceryList) {
       setState(() {
-        userGroceryLists.add(groceryList);
+        //userGroceryLists.add(groceryList);
+        Hive.box('userLists').put(groceryList.id, groceryList);
+      });
+    }
+
+    void _deleteAtIndex(int index) {
+      setState(() {
+        Hive.box('userLists').deleteAt(index);
       });
     }
 
@@ -63,22 +76,53 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ListView.builder(
+        scrollDirection: Axis.vertical,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: userGroceryLists.length,
+        itemBuilder: (context, index) {
+          final item = GroceryListTile(
+            groceryListObject: userGroceryLists[index],
+          );
+          return Dismissible(
+              // Each Dismissible must contain a Key. Keys allow Flutter to
+              // uniquely identify widgets.
+              key: Key(userGroceryLists[index].id),
+              // Provide a function that tells the app
+              // what to do after an item has been swiped away.
+              onDismissed: (direction) {
+                // Remove the item from the data source.
+                _deleteAtIndex(index);
+
+                var name = userGroceryLists[index].name;
+
+                // Then show a snackbar.
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('$name removed')));
+              },
+              background: Container(color: Colors.red),
+              child: item);
+        },
+      ),
+
+      /*ListView.builder(
           itemCount: userGroceryLists.length,
           itemBuilder: (context, index) {
             return GroceryListTile(
-              name: userGroceryLists[index].name,
+              groceryListObject: userGroceryLists[index],
             );
-          }),
+          }),*/
 
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         onPressed: () {
           //vytvaranie listu
-          var glist = new GroceryList('147', 'Peter', 0, <Grocery>[]);
-          _appendToList(glist);
+          //var glist = GroceryList('147', 'Peter', 0, <Grocery>[]);
+          _deleteAtIndex(0);
+          //_appendToList(glist);
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ),
+      ),*/
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 25,
         selectedIconTheme: IconThemeData(size: 35),
@@ -98,86 +142,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
-
-class NewGroceryListDialog extends StatefulWidget {
-  final Function(GroceryList) createList;
-
-  NewGroceryListDialog({required this.createList});
-
-  @override
-  State<NewGroceryListDialog> createState() => _NewGroceryListDialogState();
-}
-
-class _NewGroceryListDialogState extends State<NewGroceryListDialog> {
-  String groceryListName = '';
-
-  @override
-  Widget build(BuildContext context) => AlertDialog(
-        content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Create new grocery list',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              NewListFormWidget(
-                onChangedListName: (value) => setState(() {
-                  groceryListName = value;
-                }),
-                onCreateButtonPressed: () {
-                  var glist =
-                      new GroceryList('147', groceryListName, 0, <Grocery>[]);
-
-                  widget.createList(glist);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ]),
-      );
-}
-
-class NewListFormWidget extends StatelessWidget {
-  final String listName;
-  final ValueChanged<String> onChangedListName;
-  final VoidCallback onCreateButtonPressed;
-
-  const NewListFormWidget(
-      {Key? key,
-      this.listName = '',
-      required this.onChangedListName,
-      required this.onCreateButtonPressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          buildListName(),
-          buildButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget buildListName() => TextFormField(
-        initialValue: listName,
-        onChanged: onChangedListName,
-        validator: (listName) {
-          if (listName!.isEmpty) {
-            return 'The list name cannot be empty';
-          }
-          return null;
-        },
-        decoration: InputDecoration(
-            border: UnderlineInputBorder(), labelText: 'List name'),
-      );
-
-  Widget buildButton() => SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-            onPressed: onCreateButtonPressed, child: Text('Create')),
-      );
 }

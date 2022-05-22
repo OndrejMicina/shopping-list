@@ -1,50 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:nanoid/nanoid.dart';
+import 'package:shopping_list/models/grocery_model.dart';
 
-class CreateNewListDialog extends StatefulWidget {
-  final Function(String) addNewName;
+import '../models/grocery_list_model.dart';
 
-  const CreateNewListDialog({required this.addNewName});
+class NewGroceryListDialog extends StatefulWidget {
+  final Function(GroceryList) createList;
+
+  NewGroceryListDialog({required this.createList});
 
   @override
-  State<CreateNewListDialog> createState() => _CreateNewListDialogState();
+  State<NewGroceryListDialog> createState() => _NewGroceryListDialogState();
 }
 
-class _CreateNewListDialogState extends State<CreateNewListDialog> {
-  final _formKey = GlobalKey<FormState>();
+class _NewGroceryListDialogState extends State<NewGroceryListDialog> {
+  String groceryListName = '';
 
-  Widget buildTextField(String hint, TextEditingController controller) {
-    return Container(
-        margin: EdgeInsets.all(4),
-        child: TextField(
-          decoration: InputDecoration(
-              labelText: hint,
-              border: OutlineInputBorder(borderSide: BorderSide())),
-          controller: controller,
-        ));
-  }
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Create new grocery list',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              NewListFormWidget(
+                onChangedListName: (value) => setState(() {
+                  groceryListName = value;
+                }),
+                onCreateButtonPressed: () {
+                  var glist =
+                      GroceryList(nanoid(8), groceryListName, <Grocery>[]);
 
-  var listNameController = TextEditingController();
+                  widget.createList(glist);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ]),
+      );
+}
+
+class NewListFormWidget extends StatelessWidget {
+  final String listName;
+  final ValueChanged<String> onChangedListName;
+  final VoidCallback onCreateButtonPressed;
+
+  const NewListFormWidget(
+      {Key? key,
+      this.listName = '',
+      required this.onChangedListName,
+      required this.onCreateButtonPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
-      height: 170,
-      width: 380,
       child: Column(
         children: [
-          Text('Create new list',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-          buildTextField('List name', listNameController),
-          ElevatedButton(
-              onPressed: () {
-                final nameOfList = listNameController.text;
-                widget.addNewName(nameOfList);
-                Navigator.of(context).pop();
-              },
-              child: Text('Create'))
+          buildListName(),
+          buildButton(),
         ],
       ),
     );
   }
+
+  Widget buildListName() => TextFormField(
+        initialValue: listName,
+        onChanged: onChangedListName,
+        validator: (listName) {
+          if (listName!.isEmpty) {
+            return 'The list name cannot be empty';
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+            border: UnderlineInputBorder(), labelText: 'List name'),
+      );
+
+  Widget buildButton() => SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+            onPressed: onCreateButtonPressed, child: Text('Create')),
+      );
 }

@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 
-class GroceryListTile extends StatelessWidget {
-  final String name;
+import 'detail_page.dart';
+import 'models/grocery_list_model.dart';
 
-  GroceryListTile({required this.name});
+class GroceryListTile extends StatelessWidget {
+  final GroceryList groceryListObject;
+
+  GroceryListTile({required this.groceryListObject});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Container(
-        height: 80,
-        color: Colors.lightGreenAccent,
-        child: Text(name),
-      ),
-    );
+    return ListTile(
+        leading: FlutterLogo(size: 50.0),
+        title: Text(groceryListObject.name),
+        subtitle: Text(groceryListObject.id),
+        onTap: () {
+          // Navigate to the details page. If the user leaves and returns to
+          // the app after it has been killed while running in the
+          // background, the navigation stack is restored.
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DetailPage(
+                        groceryList: groceryListObject,
+                      )));
+        });
   }
 }
