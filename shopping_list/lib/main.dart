@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shopping_list/home_page.dart';
 import 'package:shopping_list/models/grocery_list_model.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'models/grocery_model.dart';
 
@@ -10,6 +11,8 @@ Future<void> main() async {
   Hive.registerAdapter(GroceryListAdapter());
   Hive.registerAdapter(GroceryAdapter());
   await Hive.openBox('userLists');
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   runApp(const MyApp());
 }

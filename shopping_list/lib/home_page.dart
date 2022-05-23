@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:shopping_list/dialogs/join_list_dialog.dart';
 import 'package:shopping_list/grocery_list_tile_view.dart';
 import 'package:shopping_list/models/grocery_model.dart';
 import 'dialogs/create_new_list_dialog.dart';
@@ -60,6 +62,21 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           _selectedIndex = index;
         });
+      } else {
+        {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return JoinListListDialog(
+                  createList: (value) {
+                    _appendToList(value);
+                  },
+                );
+              });
+          setState(() {
+            _selectedIndex = index;
+          });
+        }
       }
     }
 
