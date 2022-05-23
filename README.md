@@ -7,6 +7,8 @@ Used technologies
 
 * [Flutter](https://flutter.dev/) - front end
 * [.Net framework](https://dotnet.microsoft.com/en-us/) - back end
+* [Hive](https://pub.dev/packages/hive) - local storage
+* [Firebase](firebase.google.com) - database
 
 <!-- USAGE EXAMPLES -->
 ## SCENARIO
@@ -50,7 +52,9 @@ As a user i will be able to:
 
 | USER  | LIST|CODE|
 
+## RESULTS SUMMARY
 
+Pre programovanie bol zvoleny jazyk flutter, v ktorom som robil prvý krát. Po naučení sa základov som začal konštruovať jednoduchý list položiek ktorý som neskôr upravil na model Shopping listu. Po sprovoznení listu som najprv zvolil SQLite pre lokálne ukladanie do zariadenia. Plán bol taký že používateľ si vytvorí list lokálne a  neskor ked sa rozhodne ho zdielať bude odoslaný do databáze. SQlite mi prišla moc zložitá na tak jednoduchý problém a preto som sa obzrel za novou technologiou- hive. Naučil som sa základné ovládanie a sprovoznil lokálne ukladanie. Na generovanie ID som použil knižnicu NANOID ktorá generuje náhodné ID v požadovanom rozsahu. Pomocou tohto vygenerovanáho ID umožnujem používateľovi zdielanie svojeho listu. Po stlačení share sa list odlošle do databázy firebase od google a pomocou ID si ju vie používateľ stiahnu%t do svojho zariadenia.
 
 <!-- ROADMAP  -->
 ## Roadmap
